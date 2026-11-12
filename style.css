@@ -1,0 +1,32 @@
+/* Custom CSS for Muslim Habit Journal 2027 */
+body {
+font-family: 'Inter', sans-serif;
+background-color: #17113D;
+color: #f1f5f9;
+}
+​/* Custom Scrollbar */
+::-webkit-scrollbar {
+width: 6px;
+height: 6px;
+}
+::-webkit-scrollbar-track {
+background: #17113D;
+}
+::-webkit-scrollbar-thumb {
+background: #28215C;
+border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #8B6CF6;
+}
+​/* Arabic font fallback styling */
+.font-arabic {
+font-family: 'Traditional Arabic', 'Amiri', 'serif';
+direction: rtl;
+}
+​/* Smooth transitions */
+.transition-all {
+transition-property: all;
+transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+transition-duration: 200ms;
+}
