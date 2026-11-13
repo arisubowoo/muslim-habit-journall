@@ -1,10 +1,8 @@
-// ==========================================
-// SUPABASE CONFIGURATION (PUBLISHABLE / ANON KEY)
-// ==========================================
-const SUPABASE_URL = 'https://srverqiqhbhhxpyghktu.supabase.co/';
-const SUPABASE_ANON_KEY = 'sb_publishable_Bw2s1CqgsLQne1RDZyjdJw_3gaGlamo';
+const SUPABASE_URL = "https://srverqiqhbhhxpyghktu.supabase.co";
 
-// Inisialisasi Klien Supabase global
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-```eof
+const SUPABASE_ANON_KEY = "sb_publishable_Bw2s1CqgsLQne1RDZyjdJw_3gaGlamo";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
