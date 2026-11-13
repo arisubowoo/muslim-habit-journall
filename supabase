@@ -1,9 +1,10 @@
 // ==========================================
 // SUPABASE CONFIGURATION (PUBLISHABLE / ANON KEY)
 // ==========================================
-// Ganti dengan URL dan Anon/Publishable Key dari dashboard Supabase Anda:
-const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_URL.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLISHABLE_KEY';
-​// Inisialisasi Klien Supabase global
+const SUPABASE_URL = 'https://srverqiqhbhhxpyghktu.supabase.co/';
+const SUPABASE_ANON_KEY = 'sb_publishable_Bw2s1CqgsLQne1RDZyjdJw_3gaGlamo';
+
+// Inisialisasi Klien Supabase global
 const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+```eof
