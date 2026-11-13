@@ -31,8 +31,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Supabase JS SDK -->
+    <!-- Supabase JS SDK v2 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Config File -->
+    <script src="supabase-config.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #17113D; color: #f1f5f9; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -46,7 +48,7 @@
 
     <!-- Toast Notification Banner -->
     <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-200%] transition-all duration-300 bg-brandLavender text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-purple-400/30">
-        <i class="fa-solid fa-circle-check text-xl"></i>
+        <i id="toast-icon" class="fa-solid fa-circle-check text-xl"></i>
         <span id="toast-message" class="font-medium text-sm">Berhasil disimpan!</span>
     </div>
 
@@ -69,7 +71,12 @@
                 </svg>
             </div>
             <div>
-                <h1 class="font-bold text-sm tracking-tight text-white">Muslim Habit</h1>
+                <h1 class="font-bold text-sm tracking-tight text-white flex items-center gap-2">
+                    Muslim Habit 
+                    <span id="sync-status-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-normal">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Sinkron
+                    </span>
+                </h1>
                 <p class="text-[10px] text-brandLavender font-medium">JOURNAL 2027</p>
             </div>
         </div>
@@ -201,7 +208,7 @@
             </div>
         </section>
 
-        <!-- PANDUAN / JURNAL VIEW -->
+        <!-- JURNAL VIEW -->
         <section id="view-panduan" class="view-section hidden space-y-6">
             <div>
                 <h2 class="text-xl font-bold text-white">Jurnal & Refleksi Harian</h2>
@@ -290,19 +297,19 @@
             <!-- Login Form -->
             <div id="form-login" class="auth-form space-y-4">
                 <h3 class="text-lg font-bold text-white mb-1">Masuk ke Akun Anda</h3>
-                <p class="text-xs text-slate-400 mb-4">Gunakan akun Supabase Anda atau masuk langsung untuk uji coba.</p>
+                <p class="text-xs text-slate-400 mb-4">Gunakan akun Supabase Anda untuk menyinkronkan data antar perangkat.</p>
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Email</label>
-                    <input type="email" id="login-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com" value="demo@muslimhabit.com">
+                    <input type="email" id="login-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Password</label>
-                    <input type="password" id="login-password" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••" value="demopass123">
+                    <input type="password" id="login-password" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
                 </div>
                 <div class="text-right">
                     <button onclick="switchAuthForm('forgot')" class="text-[11px] text-brandLavender hover:underline">Lupa password?</button>
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Masuk</button>
+                <button id="btn-login-submit" onclick="handleLogin()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Masuk</button>
                 <p class="text-xs text-center text-slate-400 pt-2">Belum punya akun? <button onclick="switchAuthForm('register')" class="text-brandLavender font-medium hover:underline">Daftar</button></p>
             </div>
 
@@ -326,7 +333,7 @@
                     <label class="block text-xs text-slate-300 mb-1">Konfirmasi Password</label>
                     <input type="password" id="reg-confirm" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
                 </div>
-                <button onclick="handleRegister()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Daftar Sekarang</button>
+                <button id="btn-reg-submit" onclick="handleRegister()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Daftar Sekarang</button>
                 <p class="text-xs text-center text-slate-400 pt-2">Sudah punya akun? <button onclick="switchAuthForm('login')" class="text-brandLavender font-medium hover:underline">Masuk</button></p>
             </div>
 
@@ -374,20 +381,8 @@
         </div>
     </nav>
 
-    <!-- Script Application Logic -->
+    <!-- Application Script Logic -->
     <script>
-        // Supabase configuration placeholder (Bisa diisi URL & Anon key Anda saat deploy)
-        const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_URL.supabase.co';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLISHABLE_KEY';
-        
-        let supabaseClient = null;
-        try {
-            if (typeof supabase !== 'undefined' && SUPABASE_URL.startsWith('http')) {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-        } catch(e) { console.warn("Supabase initialization deferred, using local storage mode."); }
-
-        // Data Definitions
         const wajibList = [
             { id: 'subuh', name: 'Subuh', icon: 'fa-cloud-sun' },
             { id: 'zuhur', name: 'Zuhur', icon: 'fa-sun' },
@@ -438,10 +433,14 @@
                     currentUser = session.user;
                     await fetchUserProfile();
                 }
+                
                 supabaseClient.auth.onAuthStateChange(async (event, session) => {
                     currentUser = session ? session.user : null;
-                    if (currentUser) await fetchUserProfile();
-                    else userProfileName = 'Sahabat';
+                    if (currentUser) {
+                        await fetchUserProfile();
+                    } else {
+                        userProfileName = 'Sahabat';
+                    }
                     updateAuthUI();
                     renderAll();
                 });
@@ -478,63 +477,80 @@
             document.getElementById(`form-${formName}`).classList.remove('hidden');
         }
 
-        async function handleLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-
-            if (!email || !password) {
-                showToast('Email dan password wajib diisi!');
-                return;
-            }
-
-            if (supabaseClient) {
-                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) {
-                    showToast(error.message);
-                    return;
-                }
-            } else {
-                // Mock login for preview mode
-                currentUser = { id: 'demo-user-id', email: email };
-                userProfileName = email.split('@')[0];
-            }
-
-            showToast('Berhasil masuk!');
-            closeAuthModal();
-            updateAuthUI();
-            renderAll();
-        }
-
         async function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             const confirm = document.getElementById('reg-confirm').value.trim();
+            const btn = document.getElementById('btn-reg-submit');
 
             if (!name || !email || !password) {
-                showToast('Semua field wajib diisi!');
+                showToast('Semua field wajib diisi!', 'error');
                 return;
             }
             if (password !== confirm) {
-                showToast('Konfirmasi password tidak cocok!');
+                showToast('Konfirmasi password tidak cocok!', 'error');
                 return;
             }
 
-            if (supabaseClient) {
-                const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
-                if (error) { showToast(error.message); return; }
+            btn.disabled = true;
+            btn.innerText = 'Memproses...';
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { full_name: name } }
+                });
+
+                if (error) throw error;
+
                 if (data.user) {
-                    await supabaseClient.from('profiles').upsert({ id: data.user.id, full_name: name, updated_at: new Date() });
+                    await supabaseClient.from('profiles').upsert({
+                        id: data.user.id,
+                        full_name: name,
+                        updated_at: new Date()
+                    });
                 }
-            } else {
-                currentUser = { id: 'demo-user-id', email: email };
-                userProfileName = name;
+
+                showToast('Registrasi berhasil! Silakan masuk.');
+                closeAuthModal();
+                switchAuthForm('login');
+            } catch (err) {
+                showToast(err.message || 'Registrasi gagal', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Daftar Sekarang';
+            }
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const btn = document.getElementById('btn-login-submit');
+
+            if (!email || !password) {
+                showToast('Email dan password wajib diisi!', 'error');
+                return;
             }
 
-            showToast('Registrasi berhasil!');
-            closeAuthModal();
-            updateAuthUI();
-            renderAll();
+            btn.disabled = true;
+            btn.innerText = 'Memproses...';
+
+            try {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                showToast('Berhasil masuk!');
+                closeAuthModal();
+                updateAuthUI();
+                renderAll();
+            } catch (err) {
+                showToast(err.message || 'Login gagal', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Masuk';
+            }
         }
 
         async function handleLogout() {
@@ -548,10 +564,14 @@
 
         async function handleForgot() {
             const email = document.getElementById('forgot-email').value.trim();
-            if (!email) { showToast('Masukkan email Anda'); return; }
-            if (supabaseClient) {
-                const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
-                if (error) { showToast(error.message); return; }
+            if (!email) {
+                showToast('Masukkan email Anda', 'error');
+                return;
+            }
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+            if (error) {
+                showToast(error.message, 'error');
+                return;
             }
             showToast('Tautan reset password telah dikirim ke email Anda');
             closeAuthModal();
@@ -559,23 +579,48 @@
 
         async function fetchUserProfile() {
             if (!currentUser || !supabaseClient) return;
-            const { data } = await supabaseClient.from('profiles').select('full_name').eq('id', currentUser.id).single();
-            if (data && data.full_name) userProfileName = data.full_name;
+            const { data } = await supabaseClient
+                .from('profiles')
+                .select('full_name')
+                .eq('id', currentUser.id)
+                .single();
+            
+            if (data && data.full_name) {
+                userProfileName = data.full_name;
+            } else if (currentUser.user_metadata?.full_name) {
+                userProfileName = currentUser.user_metadata.full_name;
+            }
         }
 
         async function loadDayData(date) {
+            setSyncStatus('syncing', 'Menyinkronkan...');
             if (currentUser && supabaseClient) {
-                const { data } = await supabaseClient.from('worship_logs').select('*').eq('user_id', currentUser.id).eq('log_date', date).single();
-                if (data) {
-                    return {
-                        wajib: data.wajib || { subuh: false, zuhur: false, asar: false, magrib: false, isya: false },
-                        sunnah: data.sunnah || { tahajud: false, taubat: false, hajat: false, duha: false, witir: false, dzikir: false, shalawat: false, quran: false, sedekah: false },
-                        jurnal: { syukur: data.syukur || '', target: data.target || '', evaluasi: data.evaluasi || '', doa: data.doa || '' }
-                    };
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('worship_logs')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .eq('log_date', date)
+                        .single();
+
+                    if (data) {
+                        setSyncStatus('success', 'Tersinkron');
+                        return {
+                            wajib: data.wajib || { subuh: false, zuhur: false, asar: false, magrib: false, isya: false },
+                            sunnah: data.sunnah || { tahajud: false, taubat: false, hajat: false, duha: false, witir: false, dzikir: false, shalawat: false, quran: false, sedekah: false },
+                            jurnal: { syukur: data.syukur || '', target: data.target || '', evaluasi: data.evaluasi || '', doa: data.doa || '' }
+                        };
+                    }
+                } catch(e) {
+                    console.warn("Supabase fetch warning:", e);
                 }
             }
+
+            setSyncStatus('offline', 'Offline');
             const raw = localStorage.getItem(`muslim_habit_2027_${date}`);
-            if (raw) { try { return JSON.parse(raw); } catch(e){} }
+            if (raw) {
+                try { return JSON.parse(raw); } catch(e){}
+            }
             return {
                 wajib: { subuh: false, zuhur: false, asar: false, magrib: false, isya: false },
                 sunnah: { tahajud: false, taubat: false, hajat: false, duha: false, witir: false, dzikir: false, shalawat: false, quran: false, sedekah: false },
@@ -585,30 +630,99 @@
 
         async function saveDayData(date, habitData) {
             localStorage.setItem(`muslim_habit_2027_${date}`, JSON.stringify(habitData));
+
             if (currentUser && supabaseClient) {
-                await supabaseClient.from('worship_logs').upsert({
-                    user_id: currentUser.id, log_date: date, wajib: habitData.wajib, sunnah: habitData.sunnah,
-                    syukur: habitData.jurnal.syukur, target: habitData.jurnal.target, evaluasi: habitData.jurnal.evaluasi, doa: habitData.jurnal.doa, updated_at: new Date()
-                }, { onConflict: 'user_id,log_date' });
+                setSyncStatus('syncing', 'Menyimpan...');
+                try {
+                    const { error } = await supabaseClient.from('worship_logs').upsert({
+                        user_id: currentUser.id,
+                        log_date: date,
+                        wajib: habitData.wajib,
+                        sunnah: habitData.sunnah,
+                        syukur: habitData.jurnal.syukur,
+                        target: habitData.jurnal.target,
+                        evaluasi: habitData.jurnal.evaluasi,
+                        doa: habitData.jurnal.doa,
+                        updated_at: new Date()
+                    }, { onConflict: 'user_id,log_date' });
+
+                    if (error) throw error;
+
+                    await supabaseClient.from('journal_entries').upsert({
+                        user_id: currentUser.id,
+                        entry_date: date,
+                        syukur: habitData.jurnal.syukur,
+                        target: habitData.jurnal.target,
+                        evaluasi: habitData.jurnal.evaluasi,
+                        doa: habitData.jurnal.doa,
+                        updated_at: new Date()
+                    }, { onConflict: 'user_id,entry_date' });
+
+                    setSyncStatus('success', 'Tersinkron');
+                } catch(err) {
+                    console.error("Gagal menyimpan ke Supabase:", err);
+                    setSyncStatus('error', 'Gagal Simpan');
+                }
+            } else {
+                setSyncStatus('offline', 'Lokal Saja');
             }
         }
 
         async function loadQuranDataStorage() {
             if (currentUser && supabaseClient) {
-                const { data } = await supabaseClient.from('quran_progress').select('*').eq('user_id', currentUser.id).single();
-                if (data) return { totalPages: data.total_pages || 0, lastSurah: data.last_surah || '-', lastAyat: data.last_ayat || 0 };
+                try {
+                    const { data } = await supabaseClient
+                        .from('quran_progress')
+                        .select('*')
+                        .eq('user_id', currentUser.id)
+                        .single();
+
+                    if (data) {
+                        return { totalPages: data.total_pages || 0, lastSurah: data.last_surah || '-', lastAyat: data.last_ayat || 0 };
+                    }
+                } catch(e){}
             }
+
             const raw = localStorage.getItem(`muslim_habit_2027_quran`);
-            if (raw) { try { return JSON.parse(raw); } catch(e){} }
+            if (raw) {
+                try { return JSON.parse(raw); } catch(e){}
+            }
             return { totalPages: 0, lastSurah: '-', lastAyat: 0 };
         }
 
         async function saveQuranDataStorage(qData) {
             localStorage.setItem(`muslim_habit_2027_quran`, JSON.stringify(qData));
+
             if (currentUser && supabaseClient) {
-                await supabaseClient.from('quran_progress').upsert({
-                    user_id: currentUser.id, total_pages: qData.totalPages, last_surah: qData.lastSurah, last_ayat: qData.lastAyat, updated_at: new Date()
-                }, { onConflict: 'user_id' });
+                try {
+                    await supabaseClient.from('quran_progress').upsert({
+                        user_id: currentUser.id,
+                        total_pages: qData.totalPages,
+                        last_surah: qData.lastSurah,
+                        last_ayat: qData.lastAyat,
+                        updated_at: new Date()
+                    }, { onConflict: 'user_id' });
+                } catch(err) {
+                    console.error("Gagal simpan quran:", err);
+                }
+            }
+        }
+
+        function setSyncStatus(status, text) {
+            const badge = document.getElementById('sync-status-badge');
+            if (!badge) return;
+            if (status === 'success') {
+                badge.className = 'text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 font-normal';
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> ${text}`;
+            } else if (status === 'syncing') {
+                badge.className = 'text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1 font-normal';
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-spin"></span> ${text}`;
+            } else if (status === 'error') {
+                badge.className = 'text-[9px] px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center gap-1 font-normal';
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span> ${text}`;
+            } else {
+                badge.className = 'text-[9px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1 font-normal';
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> ${text}`;
             }
         }
 
@@ -660,14 +774,26 @@
             document.getElementById(`nav-${tabId}`).classList.add('text-brandLavender');
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (tabId === 'rekap') updateChartData();
+            if (tabId === 'rekap') {
+                updateChartData();
+            }
         }
 
-        function showToast(msg) {
+        function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
+            const icon = document.getElementById('toast-icon');
             document.getElementById('toast-message').innerText = msg;
+            
+            if (type === 'error') {
+                t.className = 'fixed top-5 right-5 z-50 transform translate-y-[-200%] transition-all duration-300 bg-rose-600 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-rose-400/30';
+                icon.className = 'fa-solid fa-triangle-exclamation text-xl';
+            } else {
+                t.className = 'fixed top-5 right-5 z-50 transform translate-y-[-200%] transition-all duration-300 bg-brandLavender text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-purple-400/30';
+                icon.className = 'fa-solid fa-circle-check text-xl';
+            }
+
             t.classList.remove('translate-y-[-200%]');
-            setTimeout(() => t.classList.add('translate-y-[-200%]'), 2500);
+            setTimeout(() => t.classList.add('translate-y-[-200%]'), 3000);
         }
 
         async function renderAll() {
@@ -730,7 +856,6 @@
             data.wajib[id] = !data.wajib[id];
             await saveDayData(selectedDate, data);
             renderAll();
-            showToast('Progres salat wajib diperbarui');
         }
 
         async function toggleSunnah(id) {
@@ -738,7 +863,6 @@
             data.sunnah[id] = !data.sunnah[id];
             await saveDayData(selectedDate, data);
             renderAll();
-            showToast('Progres amalan diperbarui');
         }
 
         async function saveDashSyukur() {
@@ -746,7 +870,7 @@
             let data = await loadDayData(selectedDate);
             data.jurnal.syukur = val;
             await saveDayData(selectedDate, data);
-            showToast('Catatan syukur disimpan');
+            showToast('Catatan syukur berhasil disimpan');
         }
 
         function renderIbadahView(data) {
@@ -787,7 +911,7 @@
             sunnahList.forEach(i => data.sunnah[i.id] = status);
             await saveDayData(selectedDate, data);
             renderAll();
-            showToast('Semua amalan dicentang');
+            showToast('Semua amalan diperbarui');
         }
 
         async function calculateStreak() {
@@ -803,6 +927,7 @@
                 else if (i > 0) break;
                 d.setDate(d.getDate() - 1);
             }
+            document.getElementById('dash-streak').innerText = streak;
             document.getElementById('stat-streak').innerText = `${streak} Hari`;
         }
 
@@ -906,7 +1031,7 @@
             const pages = parseInt(document.getElementById('quran-pages').value) || 0;
             await saveQuranDataStorage({ totalPages: pages, lastSurah: surah, lastAyat: ayat });
             await renderQuranView();
-            showToast('Progres Qur\'an disimpan');
+            showToast('Progres Qur\'an berhasil disimpan');
         }
     </script>
 </body>
