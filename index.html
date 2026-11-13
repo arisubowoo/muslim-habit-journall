@@ -1,355 +1,913 @@
 <!DOCTYPE html>
 <html lang="id" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Muslim Habit Journal 2027</title>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-darkMode: 'class',
-theme: {
-extend: {
-colors: {
-brandBg: '#17113D',
-brandCard: '#28215C',
-brandLavender: '#8B6CF6',
-brandLavenderHover: '#7c54f5',
-brandBorder: '#3d3278'
-},
-fontFamily: {
-sans: ['Inter', 'sans-serif'],
-}
-}
-}
-}
-</script>
-<!-- FontAwesome Icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- Supabase JS SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- Custom CSS -->
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muslim Habit Journal 2027</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brandBg: '#17113D',
+                        brandCard: '#28215C',
+                        brandLavender: '#8B6CF6',
+                        brandLavenderHover: '#7c54f5',
+                        brandBorder: '#3d3278'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #17113D; color: #f1f5f9; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #17113D; }
+        ::-webkit-scrollbar-thumb { background: #28215C; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8B6CF6; }
+        .font-arabic { font-family: 'Traditional Arabic', 'Amiri', 'serif'; direction: rtl; }
+    </style>
 </head>
-<body class="bg-brandBg text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brandLavender selection:text-white pb-24">
-​<!-- Toast Notification Banner -->
-<div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-200%] transition-all duration-300 bg-brandLavender text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-purple-400/30">
-<i class="fa-solid fa-circle-check text-xl"></i>
-<span id="toast-message" class="font-medium text-sm">Berhasil disimpan!</span>
-</div>
-​<!-- Top Header Bar -->
-<header class="w-full bg-brandCard/80 backdrop-blur-md border-b border-brandBorder px-4 py-3.5 sticky top-0 z-40 flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brandLavender to-purple-400 flex items-center justify-center shadow-lg shadow-brandLavender/30 p-1">
-<svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="50" cy="55" r="32" fill="#d9bfa9"/>
-<circle cx="32" cy="35" r="12" fill="#d9bfa9"/>
-<circle cx="68" cy="35" r="12" fill="#d9bfa9"/>
-<circle cx="32" cy="35" r="7" fill="#bfa084"/>
-<circle cx="68" cy="35" r="7" fill="#bfa084"/>
-<path d="M22 28C22 15 40 12 50 20C60 12 78 15 78 28C78 40 60 42 50 42C40 42 22 40 22 28Z" fill="#8B6CF6"/>
-<ellipse cx="50" cy="57" rx="10" ry="7" fill="#f4e5d8"/>
-<circle cx="43" cy="52" r="3" fill="#2b1e16"/>
-<circle cx="57" cy="52" r="3" fill="#2b1e16"/>
-<ellipse cx="50" cy="55" rx="3.5" ry="2.5" fill="#2b1e16"/>
-<path d="M47 61C48.5 62.5 51.5 62.5 53 61" stroke="#2b1e16" stroke-width="2" stroke-linecap="round"/>
-</svg>
-</div>
-<div>
-<h1 class="font-bold text-sm tracking-tight text-white">Muslim Habit</h1>
-<p class="text-[10px] text-brandLavender font-medium">JOURNAL 2027</p>
-</div>
-</div>
-​<div class="flex items-center gap-2">
-<input type="date" id="global-date-picker" onchange="changeDate(this.value)" class="bg-brandBg border border-brandBorder text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brandLavender">
-<button onclick="resetToToday()" class="bg-brandBorder hover:bg-brandLavender text-xs text-white px-3 py-2 transition font-medium rounded-xl whitespace-nowrap">Hari Ini</button>
-<button id="auth-action-btn" onclick="openAuthModal('login')" class="bg-brandLavender hover:bg-brandLavenderHover text-xs text-white px-3 py-2 transition font-medium rounded-xl whitespace-nowrap shadow">Masuk</button>
-</div>
-</header>
-​<!-- Main Container Content -->
-<main class="flex-1 max-w-4xl w-full mx-auto px-4 pt-6 space-y-6">
-​<!-- DASHBOARD VIEW -->
-<section id="view-dashboard" class="view-section space-y-6">
-<div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brandCard via-purple-900/60 to-brandLavender/40 p-6 shadow-xl border border-brandBorder">
-<div class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-<div>
-<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brandBg/60 text-brandLavender text-xs font-medium mb-3 border border-brandLavender/20">
-<i class="fa-solid fa-sparkles"></i> <span id="header-date-string">Memuat Tanggal...</span>
-</div>
-<h2 class="text-2xl font-bold text-white mb-1" id="greeting-text">Assalamu'alaikum, Sahabat</h2>
-<p class="text-xs text-purple-200 max-w-md" id="daily-motivation">
-"Amalan yang paling dicintai oleh Allah adalah amalan yang rutin meskipun sedikit."
-</p>
-</div>
-<div class="flex items-center gap-3 bg-brandBg/70 p-3.5 rounded-2xl border border-brandBorder">
-<div class="text-center">
-<div class="text-xl font-bold text-brandLavender" id="dash-streak">0</div>
-<div class="text-[10px] text-slate-400 font-medium uppercase">Streak</div>
-</div>
-<div class="w-px h-8 bg-brandBorder"></div>
-<div class="text-center">
-<div class="text-xl font-bold text-emerald-400" id="dash-progress-pct">0%</div>
-<div class="text-[10px] text-slate-400 font-medium uppercase">Progres</div>
-</div>
-</div>
-</div>
-</div>
-​<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<div class="flex justify-between items-center mb-4">
-<div class="flex items-center gap-2.5">
-<div class="w-8 h-8 rounded-xl bg-brandLavender/20 text-brandLavender flex items-center justify-center">
-<i class="fa-solid fa-kaaba text-sm"></i>
-</div>
-<h3 class="font-bold text-white text-sm">Salat Wajib 5 Waktu</h3>
-</div>
-<span id="dash-wajib-count" class="text-xs px-2.5 py-1 rounded-full bg-brandBg text-brandLavender font-medium border border-brandBorder">0 / 5</span>
-</div>
-<div class="grid grid-cols-5 gap-2" id="dash-wajib-grid"></div>
-</div>
-​<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<div class="flex justify-between items-center mb-4">
-<div class="flex items-center gap-2.5">
-<div class="w-8 h-8 rounded-xl bg-brandLavender/20 text-brandLavender flex items-center justify-center">
-<i class="fa-solid fa-star-and-crescent text-sm"></i>
-</div>
-<h3 class="font-bold text-white text-sm">Amalan & Sunnah Pilihan</h3>
-</div>
-<span id="dash-sunnah-count" class="text-xs px-2.5 py-1 rounded-full bg-brandBg text-brandLavender font-medium border border-brandBorder">0 / 9</span>
-</div>
-<div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="dash-sunnah-grid"></div>
-</div>
-​<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<div class="flex items-center gap-2.5 mb-3">
-<div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
-<i class="fa-solid fa-heart text-sm"></i>
-</div>
-<h3 class="font-bold text-white text-sm">Catatan Syukur Hari Ini</h3>
-</div>
-<textarea id="dash-syukur-input" placeholder="Alhamdulillah hari ini saya bersyukur karena..." rows="2" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none mb-3"></textarea>
-<button onclick="saveDashSyukur()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white font-medium text-xs py-2.5 rounded-xl transition shadow">Simpan Catatan Syukur</button>
-</div>
-</section>
-​<!-- IBADAH VIEW -->
-<section id="view-ibadah" class="view-section hidden space-y-6">
-<div class="flex justify-between items-center">
-<div>
-<h2 class="text-xl font-bold text-white">Checklist Ibadah Harian</h2>
-<p class="text-xs text-slate-400">Tandai amalan wajib dan sunnah Anda hari ini</p>
-</div>
-<button onclick="toggleAllIbadah(true)" class="bg-brandCard hover:bg-brandLavender text-xs text-slate-200 hover:text-white px-3.5 py-2 rounded-xl border border-brandBorder transition font-medium">Centang Semua</button>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<h3 class="font-bold text-white text-sm mb-3.5 flex items-center gap-2">
-<i class="fa-solid fa-shield-halved text-brandLavender"></i> Salat Fardhu 5 Waktu
-</h3>
-<div class="space-y-2.5" id="full-wajib-list"></div>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<h3 class="font-bold text-white text-sm mb-3.5 flex items-center gap-2">
-<i class="fa-solid fa-star text-brandLavender"></i> Amalan Sunnah, Dzikir & Sedekah
-</h3>
-<div class="space-y-2.5" id="full-sunnah-list"></div>
-</div>
-</section>
-​<!-- REKAP VIEW -->
-<section id="view-rekap" class="view-section hidden space-y-6">
-<div>
-<h2 class="text-xl font-bold text-white">Rekap & Statistik Ibadah</h2>
-<p class="text-xs text-slate-400">Analisis perkembangan konsistensi ibadah harian & bulanan</p>
-</div>
-<div class="grid grid-cols-3 gap-3">
-<div class="bg-brandCard p-4 rounded-2xl border border-brandBorder text-center">
-<span class="text-[10px] text-slate-400 uppercase font-semibold">Konsistensi</span>
-<h3 class="text-2xl font-bold text-brandLavender mt-1" id="stat-consistency">0%</h3>
-</div>
-<div class="bg-brandCard p-4 rounded-2xl border border-brandBorder text-center">
-<span class="text-[10px] text-slate-400 uppercase font-semibold">Selesai Hari Ini</span>
-<h3 class="text-2xl font-bold text-emerald-400 mt-1" id="stat-completed">0/14</h3>
-</div>
-<div class="bg-brandCard p-4 rounded-2xl border border-brandBorder text-center">
-<span class="text-[10px] text-slate-400 uppercase font-semibold">Streak Terbaik</span>
-<h3 class="text-2xl font-bold text-amber-400 mt-1" id="stat-streak">0 Hari</h3>
-</div>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<h3 class="font-bold text-white text-sm mb-1">Grafik Progres 7 Hari Terakhir</h3>
-<p class="text-[11px] text-slate-400 mb-4">Persentase penyelesaian amalan harian</p>
-<div class="h-64 relative">
-<canvas id="weeklyChart"></canvas>
-</div>
-</div>
-</section>
-​<!-- PANDUAN / JURNAL VIEW -->
-<section id="view-panduan" class="view-section hidden space-y-6">
-<div>
-<h2 class="text-xl font-bold text-white">Jurnal & Refleksi Harian</h2>
-<p class="text-xs text-slate-400">Catat rasa syukur, target, evaluasi diri, dan doa harian</p>
-</div>
-<div class="space-y-4">
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<label class="block text-xs font-bold text-amber-400 mb-2"><i class="fa-solid fa-face-smile mr-1.5"></i> Catatan Rasa Syukur</label>
-<textarea id="jurnal-syukur" rows="3" oninput="saveJournalField('syukur')" placeholder="Tuliskan nikmat Allah hari ini..." class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<label class="block text-xs font-bold text-brandLavender mb-2"><i class="fa-solid fa-bullseye mr-1.5"></i> Target Ibadah & Fokus</label>
-<textarea id="jurnal-target" rows="3" oninput="saveJournalField('target')" placeholder="Contoh: Baca 1 juz, sedekah subuh..." class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<label class="block text-xs font-bold text-emerald-400 mb-2"><i class="fa-solid fa-clipboard-user mr-1.5"></i> Evaluasi Diri (Muhasabah)</label>
-<textarea id="jurnal-evaluasi" rows="3" oninput="saveJournalField('evaluasi')" placeholder="Apa yang perlu diperbaiki besok?" class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
-<label class="block text-xs font-bold text-purple-300 mb-2"><i class="fa-solid fa-hands-holding-child mr-1.5"></i> Catatan Doa Khusus</label>
-<textarea id="jurnal-doa" rows="3" oninput="saveJournalField('doa')" placeholder="Tuliskan doa-doa mustajabmu..." class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
-</div>
-</div>
-</section>
-​<!-- DOA VIEW -->
-<section id="view-doa" class="view-section hidden space-y-6">
-<div class="flex justify-between items-center gap-3">
-<div>
-<h2 class="text-xl font-bold text-white">Menu Doa Pilihan</h2>
-<p class="text-xs text-slate-400">Kumpulan doa sehari-hari & setelah salat</p>
-</div>
-<input type="text" id="doa-search" oninput="filterDoa(this.value)" placeholder="Cari doa..." class="bg-brandCard border border-brandBorder text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brandLavender w-36 sm:w-48">
-</div>
-<div class="space-y-4" id="doa-container"></div>
-</section>
-​<!-- QUR'AN VIEW -->
-<section id="view-quran" class="view-section hidden space-y-6">
-<div>
-<h2 class="text-xl font-bold text-white">Al-Qur'an Tilawah & Khatam Tracker</h2>
-<p class="text-xs text-slate-400">Pantau progres bacaan harian & target khatam 30 juz</p>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg space-y-4">
-<h3 class="font-bold text-white text-sm flex items-center gap-2">
-<i class="fa-solid fa-pen-nib text-brandLavender"></i> Perbarui Catatan Tilawah
-</h3>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<div>
-<label class="block text-[11px] text-slate-300 mb-1">Surat Terakhir</label>
-<input type="text" id="quran-surah" placeholder="Contoh: Al-Baqarah" class="w-full bg-brandBg border border-brandBorder rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brandLavender">
-</div>
-<div>
-<label class="block text-[11px] text-slate-300 mb-1">Ayat Terakhir</label>
-<input type="number" id="quran-ayat" placeholder="Contoh: 45" class="w-full bg-brandBg border border-brandBorder rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brandLavender">
-</div>
-<div>
-<label class="block text-[11px] text-slate-300 mb-1">Total Hal. Dibaca</label>
-<input type="number" id="quran-pages" placeholder="Contoh: 15" class="w-full bg-brandBg border border-brandBorder rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brandLavender">
-</div>
-</div>
-<button onclick="saveQuranData()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white font-medium text-xs py-2.5 rounded-xl transition shadow">Simpan Progres Tilawah</button>
-</div>
-<div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg space-y-4">
-<div class="flex justify-between items-center">
-<span class="text-xs text-slate-300">Status Khatam 30 Juz (604 Hal)</span>
-<span class="text-xs font-bold text-brandLavender" id="quran-pct-label">0%</span>
-</div>
-<div class="w-full bg-brandBg rounded-full h-3 overflow-hidden border border-brandBorder">
-<div id="quran-progress-bar" class="bg-gradient-to-r from-brandLavender to-emerald-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
-</div>
-<div class="flex justify-between text-xs text-slate-400 pt-1">
-<span>Posisi: <strong id="quran-posisi" class="text-white">-</strong></span>
-<span>Total: <strong id="quran-total-halaman" class="text-white">0</strong> Hal</span>
-</div>
-</div>
-</section>
-​</main>
-​<!-- AUTH MODAL (LOGIN / REGISTER / FORGOT) -->
-<div id="auth-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
-<div class="bg-brandCard border border-brandBorder rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
-<button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
-​<!-- Login Form -->
-<div id="form-login" class="auth-form space-y-4">
-<h3 class="text-lg font-bold text-white mb-1">Masuk ke Akun Anda</h3>
-<p class="text-xs text-slate-400 mb-4">Sinkronkan data ibadah Anda di berbagai perangkat.</p>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Email</label>
-<input type="email" id="login-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com">
-</div>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Password</label>
-<input type="password" id="login-password" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
-</div>
-<div class="text-right">
-<button onclick="switchAuthForm('forgot')" class="text-[11px] text-brandLavender hover:underline">Lupa password?</button>
-</div>
-<button onclick="handleLogin()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Masuk</button>
-<p class="text-xs text-center text-slate-400 pt-2">Belum punya akun? <button onclick="switchAuthForm('register')" class="text-brandLavender font-medium hover:underline">Daftar</button></p>
-</div>
-​<!-- Register Form -->
-<div id="form-register" class="auth-form hidden space-y-4">
-<h3 class="text-lg font-bold text-white mb-1">Daftar Akun Baru</h3>
-<p class="text-xs text-slate-400 mb-4">Mulai perjalanan habit Islami Anda sekarang.</p>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Nama Lengkap</label>
-<input type="text" id="reg-name" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="Ahmad Fulan">
-</div>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Email</label>
-<input type="email" id="reg-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com">
-</div>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Password</label>
-<input type="password" id="reg-password" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
-</div>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Konfirmasi Password</label>
-<input type="password" id="reg-confirm" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
-</div>
-<button onclick="handleRegister()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Daftar Sekarang</button>
-<p class="text-xs text-center text-slate-400 pt-2">Sudah punya akun? <button onclick="switchAuthForm('login')" class="text-brandLavender font-medium hover:underline">Masuk</button></p>
-</div>
-​<!-- Forgot Password Form -->
-<div id="form-forgot" class="auth-form hidden space-y-4">
-<h3 class="text-lg font-bold text-white mb-1">Reset Password</h3>
-<p class="text-xs text-slate-400 mb-4">Masukkan email Anda untuk tautan pemulihan sandi.</p>
-<div>
-<label class="block text-xs text-slate-300 mb-1">Email</label>
-<input type="email" id="forgot-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com">
-</div>
-<button onclick="handleForgot()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Kirim Tautan Reset</button>
-<p class="text-xs text-center text-slate-400 pt-2"><button onclick="switchAuthForm('login')" class="text-brandLavender font-medium hover:underline">Kembali ke Masuk</button></p>
-</div>
-</div>
-</div>
-​<!-- Bottom Navigation Bar -->
-<nav class="fixed bottom-0 left-0 right-0 bg-brandCard/95 backdrop-blur-md border-t border-brandBorder py-2.5 px-2 z-40 max-w-4xl mx-auto rounded-t-3xl shadow-2xl">
-<div class="flex justify-around items-center">
-<button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center gap-1 text-brandLavender transition-all">
-<i class="fa-solid fa-house-chimney text-lg"></i>
-<span class="text-[10px] font-medium">Ibadah</span>
-</button>
-<button onclick="switchTab('ibadah')" id="nav-ibadah" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
-<i class="fa-solid fa-list-check text-lg"></i>
-<span class="text-[10px] font-medium">Checklist</span>
-</button>
-<button onclick="switchTab('rekap')" id="nav-rekap" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
-<i class="fa-solid fa-chart-pie text-lg"></i>
-<span class="text-[10px] font-medium">Rekap</span>
-</button>
-<button onclick="switchTab('panduan')" id="nav-panduan" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
-<i class="fa-solid fa-book-open-reader text-lg"></i>
-<span class="text-[10px] font-medium">Syukur</span>
-</button>
-<button onclick="switchTab('doa')" id="nav-doa" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
-<i class="fa-solid fa-hands-praying text-lg"></i>
-<span class="text-[10px] font-medium">Doa</span>
-</button>
-<button onclick="switchTab('quran')" id="nav-quran" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
-<i class="fa-solid fa-quran text-lg"></i>
-<span class="text-[10px] font-medium">Qur'an</span>
-</button>
-</div>
-</nav>
-​<!-- Scripts -->
-<script src="supabase-config.js"></script>
-<script src="script.js"></script>
+<body class="bg-brandBg text-slate-100 min-h-screen flex flex-col antialiased selection:bg-brandLavender selection:text-white pb-28">
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-200%] transition-all duration-300 bg-brandLavender text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-purple-400/30">
+        <i class="fa-solid fa-circle-check text-xl"></i>
+        <span id="toast-message" class="font-medium text-sm">Berhasil disimpan!</span>
+    </div>
+
+    <!-- Top Header Bar -->
+    <header class="w-full bg-brandCard/80 backdrop-blur-md border-b border-brandBorder px-4 py-3.5 sticky top-0 z-40 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brandLavender to-purple-400 flex items-center justify-center shadow-lg shadow-brandLavender/30 p-1">
+                <svg viewBox="0 0 100 100" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="55" r="32" fill="#d9bfa9"/>
+                    <circle cx="32" cy="35" r="12" fill="#d9bfa9"/>
+                    <circle cx="68" cy="35" r="12" fill="#d9bfa9"/>
+                    <circle cx="32" cy="35" r="7" fill="#bfa084"/>
+                    <circle cx="68" cy="35" r="7" fill="#bfa084"/>
+                    <path d="M22 28C22 15 40 12 50 20C60 12 78 15 78 28C78 40 60 42 50 42C40 42 22 40 22 28Z" fill="#8B6CF6"/>
+                    <ellipse cx="50" cy="57" rx="10" ry="7" fill="#f4e5d8"/>
+                    <circle cx="43" cy="52" r="3" fill="#2b1e16"/>
+                    <circle cx="57" cy="52" r="3" fill="#2b1e16"/>
+                    <ellipse cx="50" cy="55" rx="3.5" ry="2.5" fill="#2b1e16"/>
+                    <path d="M47 61C48.5 62.5 51.5 62.5 53 61" stroke="#2b1e16" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-sm tracking-tight text-white">Muslim Habit</h1>
+                <p class="text-[10px] text-brandLavender font-medium">JOURNAL 2027</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <input type="date" id="global-date-picker" onchange="changeDate(this.value)" class="bg-brandBg border border-brandBorder text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brandLavender">
+            <button onclick="resetToToday()" class="bg-brandBorder hover:bg-brandLavender text-xs text-white px-3 py-2 transition font-medium rounded-xl whitespace-nowrap">Hari Ini</button>
+            <button id="auth-action-btn" onclick="openAuthModal('login')" class="bg-brandLavender hover:bg-brandLavenderHover text-xs text-white px-3 py-2 transition font-medium rounded-xl whitespace-nowrap shadow">Masuk</button>
+        </div>
+    </header>
+
+    <!-- Main Container Content -->
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 pt-6 space-y-6">
+        
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="view-section space-y-6">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brandCard via-purple-900/60 to-brandLavender/40 p-6 shadow-xl border border-brandBorder">
+                <div class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brandBg/60 text-brandLavender text-xs font-medium mb-3 border border-brandLavender/20">
+                            <i class="fa-solid fa-sparkles"></i> <span id="header-date-string">Memuat Tanggal...</span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-1" id="greeting-text">Assalamu'alaikum, Sahabat</h2>
+                        <p class="text-xs text-purple-200 max-w-md" id="daily-motivation">
+                            "Amalan yang paling dicintai oleh Allah adalah amalan yang rutin meskipun sedikit."
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 bg-brandBg/70 p-3.5 rounded-2xl border border-brandBorder">
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-brandLavender" id="dash-streak">0</div>
+                            <div class="text-[10px] text-slate-400 font-medium uppercase">Streak</div>
+                        </div>
+                        <div class="w-px h-8 bg-brandBorder"></div>
+                        <div class="text-center">
+                            <div class="text-xl font-bold text-emerald-400" id="dash-progress-pct">0%</div>
+                            <div class="text-[10px] text-slate-400 font-medium uppercase">Progres</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-brandLavender/20 text-brandLavender flex items-center justify-center">
+                            <i class="fa-solid fa-kaaba text-sm"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">Salat Wajib 5 Waktu</h3>
+                    </div>
+                    <span id="dash-wajib-count" class="text-xs px-2.5 py-1 rounded-full bg-brandBg text-brandLavender font-medium border border-brandBorder">0 / 5</span>
+                </div>
+                <div class="grid grid-cols-5 gap-2" id="dash-wajib-grid"></div>
+            </div>
+
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-brandLavender/20 text-brandLavender flex items-center justify-center">
+                            <i class="fa-solid fa-star-and-crescent text-sm"></i>
+                        </div>
+                        <h3 class="font-bold text-white text-sm">Amalan & Sunnah Pilihan</h3>
+                    </div>
+                    <span id="dash-sunnah-count" class="text-xs px-2.5 py-1 rounded-full bg-brandBg text-brandLavender font-medium border border-brandBorder">0 / 9</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5" id="dash-sunnah-grid"></div>
+            </div>
+
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                <div class="flex items-center gap-2.5 mb-3">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+                        <i class="fa-solid fa-heart text-sm"></i>
+                    </div>
+                    <h3 class="font-bold text-white text-sm">Catatan Syukur Hari Ini</h3>
+                </div>
+                <textarea id="dash-syukur-input" placeholder="Alhamdulillah hari ini saya bersyukur karena..." rows="2" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none mb-3"></textarea>
+                <button onclick="saveDashSyukur()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white font-medium text-xs py-2.5 rounded-xl transition shadow">Simpan Catatan Syukur</button>
+            </div>
+        </section>
+
+        <!-- IBADAH VIEW -->
+        <section id="view-ibadah" class="view-section hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Checklist Ibadah Harian</h2>
+                    <p class="text-xs text-slate-400">Tandai amalan wajib dan sunnah Anda hari ini</p>
+                </div>
+                <button onclick="toggleAllIbadah(true)" class="bg-brandCard hover:bg-brandLavender text-xs text-slate-200 hover:text-white px-3.5 py-2 rounded-xl border border-brandBorder transition font-medium">Centang Semua</button>
+            </div>
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                <h3 class="font-bold text-white text-sm mb-3.5 flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved text-brandLavender"></i> Salat Fardhu 5 Waktu
+                </h3>
+                <div class="space-y-2.5" id="full-wajib-list"></div>
+            </div>
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                <h3 class="font-bold text-white text-sm mb-3.5 flex items-center gap-2">
+                    <i class="fa-solid fa-star text-brandLavender"></i> Amalan Sunnah, Dzikir & Sedekah
+                </h3>
+                <div class="space-y-2.5" id="full-sunnah-list"></div>
+            </div>
+        </section>
+
+        <!-- REKAP VIEW -->
+        <section id="view-rekap" class="view-section hidden space-y-6">
+            <div>
+                <h2 class="text-xl font-bold text-white">Rekap & Statistik Ibadah</h2>
+                <p class="text-xs text-slate-400">Analisis perkembangan konsistensi ibadah harian & bulanan</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-brandCard p-4 rounded-2xl border border-brandBorder text-center">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Konsistensi</span>
+                    <h3 class="text-2xl font-bold text-brandLavender mt-1" id="stat-consistency">0%</h3>
+                </div>
+                <div class="bg-brandCard p-4 rounded-2xl border border-brandBorder text-center">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Selesai Hari Ini</span>
+                    <h3 class="text-2xl font-bold text-emerald-400 mt-1" id="stat-completed">0/14</h3>
+                </div>
+                <div class="bg-brandCard p-4 rounded-2xl border border-brandBorder text-center">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold">Streak Terbaik</span>
+                    <h3 class="text-2xl font-bold text-amber-400 mt-1" id="stat-streak">0 Hari</h3>
+                </div>
+            </div>
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                <h3 class="font-bold text-white text-sm mb-1">Grafik Progres 7 Hari Terakhir</h3>
+                <p class="text-[11px] text-slate-400 mb-4">Persentase penyelesaian amalan harian</p>
+                <div class="h-64 relative">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANDUAN / JURNAL VIEW -->
+        <section id="view-panduan" class="view-section hidden space-y-6">
+            <div>
+                <h2 class="text-xl font-bold text-white">Jurnal & Refleksi Harian</h2>
+                <p class="text-xs text-slate-400">Catat rasa syukur, target, evaluasi diri, dan doa harian</p>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                    <label class="block text-xs font-bold text-amber-400 mb-2"><i class="fa-solid fa-face-smile mr-1.5"></i> Catatan Rasa Syukur</label>
+                    <textarea id="jurnal-syukur" rows="3" oninput="saveJournalField('syukur')" placeholder="Tuliskan nikmat Allah hari ini..." class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
+                </div>
+                <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                    <label class="block text-xs font-bold text-brandLavender mb-2"><i class="fa-solid fa-bullseye mr-1.5"></i> Target Ibadah & Fokus</label>
+                    <textarea id="jurnal-target" rows="3" oninput="saveJournalField('target')" placeholder="Contoh: Baca 1 juz, sedekah subuh..." class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
+                </div>
+                <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                    <label class="block text-xs font-bold text-emerald-400 mb-2"><i class="fa-solid fa-clipboard-user mr-1.5"></i> Evaluasi Diri (Muhasabah)</label>
+                    <textarea id="jurnal-evaluasi" rows="3" oninput="saveJournalField('evaluasi')" placeholder="Apa yang perlu diperbaiki besok?" class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
+                </div>
+                <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg">
+                    <label class="block text-xs font-bold text-purple-300 mb-2"><i class="fa-solid fa-hands-holding-child mr-1.5"></i> Catatan Doa Khusus</label>
+                    <textarea id="jurnal-doa" rows="3" oninput="saveJournalField('doa')" placeholder="Tuliskan doa-doa mustajabmu..." class="w-full bg-brandBg border border-brandBorder rounded-2xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandLavender resize-none"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <!-- DOA VIEW -->
+        <section id="view-doa" class="view-section hidden space-y-6">
+            <div class="flex justify-between items-center gap-3">
+                <div>
+                    <h2 class="text-xl font-bold text-white">Menu Doa Pilihan</h2>
+                    <p class="text-xs text-slate-400">Kumpulan doa sehari-hari & setelah salat</p>
+                </div>
+                <input type="text" id="doa-search" oninput="filterDoa(this.value)" placeholder="Cari doa..." class="bg-brandCard border border-brandBorder text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-brandLavender w-36 sm:w-48">
+            </div>
+            <div class="space-y-4" id="doa-container"></div>
+        </section>
+
+        <!-- QUR'AN VIEW -->
+        <section id="view-quran" class="view-section hidden space-y-6">
+            <div>
+                <h2 class="text-xl font-bold text-white">Al-Qur'an Tilawah & Khatam Tracker</h2>
+                <p class="text-xs text-slate-400">Pantau progres bacaan harian & target khatam 30 juz</p>
+            </div>
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg space-y-4">
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-pen-nib text-brandLavender"></i> Perbarui Catatan Tilawah
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">Surat Terakhir</label>
+                        <input type="text" id="quran-surah" placeholder="Contoh: Al-Baqarah" class="w-full bg-brandBg border border-brandBorder rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brandLavender">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">Ayat Terakhir</label>
+                        <input type="number" id="quran-ayat" placeholder="Contoh: 45" class="w-full bg-brandBg border border-brandBorder rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brandLavender">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-300 mb-1">Total Hal. Dibaca</label>
+                        <input type="number" id="quran-pages" placeholder="Contoh: 15" class="w-full bg-brandBg border border-brandBorder rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-brandLavender">
+                    </div>
+                </div>
+                <button onclick="saveQuranData()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white font-medium text-xs py-2.5 rounded-xl transition shadow">Simpan Progres Tilawah</button>
+            </div>
+            <div class="bg-brandCard rounded-3xl p-5 border border-brandBorder shadow-lg space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-slate-300">Status Khatam 30 Juz (604 Hal)</span>
+                    <span class="text-xs font-bold text-brandLavender" id="quran-pct-label">0%</span>
+                </div>
+                <div class="w-full bg-brandBg rounded-full h-3 overflow-hidden border border-brandBorder">
+                    <div id="quran-progress-bar" class="bg-gradient-to-r from-brandLavender to-emerald-400 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-slate-400 pt-1">
+                    <span>Posisi: <strong id="quran-posisi" class="text-white">-</strong></span>
+                    <span>Total: <strong id="quran-total-halaman" class="text-white">0</strong> Hal</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-brandCard border border-brandBorder rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <!-- Login Form -->
+            <div id="form-login" class="auth-form space-y-4">
+                <h3 class="text-lg font-bold text-white mb-1">Masuk ke Akun Anda</h3>
+                <p class="text-xs text-slate-400 mb-4">Gunakan akun Supabase Anda atau masuk langsung untuk uji coba.</p>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Email</label>
+                    <input type="email" id="login-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com" value="demo@muslimhabit.com">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Password</label>
+                    <input type="password" id="login-password" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••" value="demopass123">
+                </div>
+                <div class="text-right">
+                    <button onclick="switchAuthForm('forgot')" class="text-[11px] text-brandLavender hover:underline">Lupa password?</button>
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Masuk</button>
+                <p class="text-xs text-center text-slate-400 pt-2">Belum punya akun? <button onclick="switchAuthForm('register')" class="text-brandLavender font-medium hover:underline">Daftar</button></p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="form-register" class="auth-form hidden space-y-4">
+                <h3 class="text-lg font-bold text-white mb-1">Daftar Akun Baru</h3>
+                <p class="text-xs text-slate-400 mb-4">Mulai perjalanan habit Islami Anda sekarang.</p>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Nama Lengkap</label>
+                    <input type="text" id="reg-name" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="Ahmad Fulan">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Email</label>
+                    <input type="email" id="reg-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Password</label>
+                    <input type="password" id="reg-password" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Konfirmasi Password</label>
+                    <input type="password" id="reg-confirm" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="••••••••">
+                </div>
+                <button onclick="handleRegister()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Daftar Sekarang</button>
+                <p class="text-xs text-center text-slate-400 pt-2">Sudah punya akun? <button onclick="switchAuthForm('login')" class="text-brandLavender font-medium hover:underline">Masuk</button></p>
+            </div>
+
+            <!-- Forgot Password Form -->
+            <div id="form-forgot" class="auth-form hidden space-y-4">
+                <h3 class="text-lg font-bold text-white mb-1">Reset Password</h3>
+                <p class="text-xs text-slate-400 mb-4">Masukkan email Anda untuk tautan pemulihan sandi.</p>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Email</label>
+                    <input type="email" id="forgot-email" class="w-full bg-brandBg border border-brandBorder rounded-xl p-3 text-xs text-slate-200 focus:outline-none focus:border-brandLavender" placeholder="nama@email.com">
+                </div>
+                <button onclick="handleForgot()" class="w-full bg-brandLavender hover:bg-brandLavenderHover text-white text-xs font-semibold py-3 rounded-xl transition shadow">Kirim Tautan Reset</button>
+                <p class="text-xs text-center text-slate-400 pt-2"><button onclick="switchAuthForm('login')" class="text-brandLavender font-medium hover:underline">Kembali ke Masuk</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-brandCard/95 backdrop-blur-md border-t border-brandBorder py-2.5 px-2 z-40 max-w-4xl mx-auto rounded-t-3xl shadow-2xl">
+        <div class="flex justify-around items-center">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn flex flex-col items-center gap-1 text-brandLavender transition-all">
+                <i class="fa-solid fa-house-chimney text-lg"></i>
+                <span class="text-[10px] font-medium">Ibadah</span>
+            </button>
+            <button onclick="switchTab('ibadah')" id="nav-ibadah" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
+                <i class="fa-solid fa-list-check text-lg"></i>
+                <span class="text-[10px] font-medium">Checklist</span>
+            </button>
+            <button onclick="switchTab('rekap')" id="nav-rekap" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
+                <i class="fa-solid fa-chart-pie text-lg"></i>
+                <span class="text-[10px] font-medium">Rekap</span>
+            </button>
+            <button onclick="switchTab('panduan')" id="nav-panduan" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
+                <i class="fa-solid fa-book-open-reader text-lg"></i>
+                <span class="text-[10px] font-medium">Syukur</span>
+            </button>
+            <button onclick="switchTab('doa')" id="nav-doa" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
+                <i class="fa-solid fa-hands-praying text-lg"></i>
+                <span class="text-[10px] font-medium">Doa</span>
+            </button>
+            <button onclick="switchTab('quran')" id="nav-quran" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-brandLavender transition-all">
+                <i class="fa-solid fa-quran text-lg"></i>
+                <span class="text-[10px] font-medium">Qur'an</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Script Application Logic -->
+    <script>
+        // Supabase configuration placeholder (Bisa diisi URL & Anon key Anda saat deploy)
+        const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT_URL.supabase.co';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_PUBLISHABLE_KEY';
+        
+        let supabaseClient = null;
+        try {
+            if (typeof supabase !== 'undefined' && SUPABASE_URL.startsWith('http')) {
+                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(e) { console.warn("Supabase initialization deferred, using local storage mode."); }
+
+        // Data Definitions
+        const wajibList = [
+            { id: 'subuh', name: 'Subuh', icon: 'fa-cloud-sun' },
+            { id: 'zuhur', name: 'Zuhur', icon: 'fa-sun' },
+            { id: 'asar', name: 'Asar', icon: 'fa-cloud-sun' },
+            { id: 'magrib', name: 'Magrib', icon: 'fa-moon' },
+            { id: 'isya', name: 'Isya', icon: 'fa-star' }
+        ];
+
+        const sunnahList = [
+            { id: 'tahajud', name: 'Tahajud', icon: 'fa-moon', desc: 'Sepertiga malam' },
+            { id: 'taubat', name: 'Salat Taubat', icon: 'fa-hands-praying', desc: 'Mohon ampun' },
+            { id: 'hajat', name: 'Salat Hajat', icon: 'fa-bullseye', desc: 'Hajat & doa' },
+            { id: 'duha', name: 'Salat Duha', icon: 'fa-sun', desc: 'Pagi hari' },
+            { id: 'witir', name: 'Salat Witir', icon: 'fa-star-of-david', desc: 'Penutup malam' },
+            { id: 'dzikir', name: 'Dzikir Harian', icon: 'fa-spa', desc: 'Pagi & petang' },
+            { id: 'shalawat', name: 'Shalawat', icon: 'fa-heart', desc: 'Kepada Nabi SAW' },
+            { id: 'quran', name: 'Tilawah Qur\'an', icon: 'fa-book-quran', desc: 'Membaca Al-Qur\'an' },
+            { id: 'sedekah', name: 'Sedekah Harian', icon: 'fa-hand-holding-heart', desc: 'Infaq terbaik' }
+        ];
+
+        const listDoa = [
+            { title: 'Doa Sehari-hari (Sebelum & Bangun Tidur)', arabic: 'بِاسْمِكَ اللَّهُمَّ أَحْيَا وَأَمُوتُ', latin: 'Bismika allahumma ahya wa amuut', meaning: 'Dengan nama-Mu ya Allah, aku hidup dan aku mati.' },
+            { title: 'Doa Setelah Salat Fardhu', arabic: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ، وَشُكْرِكَ، وَحُسْنِ عِبَادَتِكَ', latin: 'Allahumma a\'inni \'ala dzikrika, wa syukrika, wa husni \'ibadatik', meaning: 'Ya Allah, bantulah aku untuk senantiasa berdzikir, bersyukur, dan beribadah dengan baik kepada-Mu.' },
+            { title: 'Doa Memohon Rezeki yang Halal', arabic: 'اللَّهُمَّ إِنِّى أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا', latin: 'Allahumma inni as\'aluka \'ilman nafi\'an, wa rizqan thayyiban, wa amalan mutaqabbalan', meaning: 'Ya Allah, sesungguhnya aku memohon kepada-Mu ilmu yang bermanfaat, rezeki yang baik, dan amal yang diterima.' },
+            { title: 'Doa Memohon Ampunan (Sayyidul Istighfar)', arabic: 'اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ', latin: 'Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana \'abduka', meaning: 'Ya Allah, Engkau adalah Tuhanku, tidak ada tuhan selain Engkau yang menciptakan aku dan aku adalah hamba-Mu.' },
+            { title: 'Doa Kebaikan Dunia & Akhirat', arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', latin: 'Rabbana atina fid dunya hasanah wa fil akhirati hasanah wa qina \'adzaban naar', meaning: 'Ya Allah, berikanlah kebaikan di dunia dan akhirat, serta peliharalah dari siksa neraka.' }
+        ];
+
+        const motivasiList = [
+            "“Amalan yang paling dicintai oleh Allah adalah amalan yang rutin meskipun sedikit.” (HR. Bukhari)",
+            "“Sesungguhnya beserta kesulitan itu ada kemudahan.” (QS. Al-Insyirah: 6)",
+            "“Barangsiapa menempuh jalan untuk mencari ilmu, maka Allah mudahkan baginya jalan ke surga.” (HR. Muslim)"
+        ];
+
+        let selectedDate = new Date().toISOString().split('T')[0];
+        let weeklyChartInstance = null;
+        let currentUser = null;
+        let userProfileName = 'Sahabat';
+
+        window.onload = async function() {
+            document.getElementById('global-date-picker').value = selectedDate;
+            setRandomMotivation();
+            initChart();
+            
+            if (supabaseClient) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    currentUser = session.user;
+                    await fetchUserProfile();
+                }
+                supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                    currentUser = session ? session.user : null;
+                    if (currentUser) await fetchUserProfile();
+                    else userProfileName = 'Sahabat';
+                    updateAuthUI();
+                    renderAll();
+                });
+            }
+
+            updateDateDisplay();
+            renderAll();
+        };
+
+        function updateAuthUI() {
+            const btn = document.getElementById('auth-action-btn');
+            if (currentUser) {
+                btn.innerText = 'Keluar';
+                btn.onclick = handleLogout;
+                btn.className = 'bg-rose-500/20 hover:bg-rose-500 text-rose-300 hover:text-white text-xs px-3 py-2 transition font-medium rounded-xl whitespace-nowrap border border-rose-500/30';
+            } else {
+                btn.innerText = 'Masuk';
+                btn.onclick = () => openAuthModal('login');
+                btn.className = 'bg-brandLavender hover:bg-brandLavenderHover text-xs text-white px-3 py-2 transition font-medium rounded-xl whitespace-nowrap shadow';
+            }
+        }
+
+        function openAuthModal(mode) {
+            document.getElementById('auth-modal').classList.remove('hidden');
+            switchAuthForm(mode);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.add('hidden');
+        }
+
+        function switchAuthForm(formName) {
+            document.querySelectorAll('.auth-form').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`form-${formName}`).classList.remove('hidden');
+        }
+
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+
+            if (!email || !password) {
+                showToast('Email dan password wajib diisi!');
+                return;
+            }
+
+            if (supabaseClient) {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    showToast(error.message);
+                    return;
+                }
+            } else {
+                // Mock login for preview mode
+                currentUser = { id: 'demo-user-id', email: email };
+                userProfileName = email.split('@')[0];
+            }
+
+            showToast('Berhasil masuk!');
+            closeAuthModal();
+            updateAuthUI();
+            renderAll();
+        }
+
+        async function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const confirm = document.getElementById('reg-confirm').value.trim();
+
+            if (!name || !email || !password) {
+                showToast('Semua field wajib diisi!');
+                return;
+            }
+            if (password !== confirm) {
+                showToast('Konfirmasi password tidak cocok!');
+                return;
+            }
+
+            if (supabaseClient) {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } });
+                if (error) { showToast(error.message); return; }
+                if (data.user) {
+                    await supabaseClient.from('profiles').upsert({ id: data.user.id, full_name: name, updated_at: new Date() });
+                }
+            } else {
+                currentUser = { id: 'demo-user-id', email: email };
+                userProfileName = name;
+            }
+
+            showToast('Registrasi berhasil!');
+            closeAuthModal();
+            updateAuthUI();
+            renderAll();
+        }
+
+        async function handleLogout() {
+            if (supabaseClient) await supabaseClient.auth.signOut();
+            currentUser = null;
+            userProfileName = 'Sahabat';
+            showToast('Berhasil keluar');
+            updateAuthUI();
+            renderAll();
+        }
+
+        async function handleForgot() {
+            const email = document.getElementById('forgot-email').value.trim();
+            if (!email) { showToast('Masukkan email Anda'); return; }
+            if (supabaseClient) {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+                if (error) { showToast(error.message); return; }
+            }
+            showToast('Tautan reset password telah dikirim ke email Anda');
+            closeAuthModal();
+        }
+
+        async function fetchUserProfile() {
+            if (!currentUser || !supabaseClient) return;
+            const { data } = await supabaseClient.from('profiles').select('full_name').eq('id', currentUser.id).single();
+            if (data && data.full_name) userProfileName = data.full_name;
+        }
+
+        async function loadDayData(date) {
+            if (currentUser && supabaseClient) {
+                const { data } = await supabaseClient.from('worship_logs').select('*').eq('user_id', currentUser.id).eq('log_date', date).single();
+                if (data) {
+                    return {
+                        wajib: data.wajib || { subuh: false, zuhur: false, asar: false, magrib: false, isya: false },
+                        sunnah: data.sunnah || { tahajud: false, taubat: false, hajat: false, duha: false, witir: false, dzikir: false, shalawat: false, quran: false, sedekah: false },
+                        jurnal: { syukur: data.syukur || '', target: data.target || '', evaluasi: data.evaluasi || '', doa: data.doa || '' }
+                    };
+                }
+            }
+            const raw = localStorage.getItem(`muslim_habit_2027_${date}`);
+            if (raw) { try { return JSON.parse(raw); } catch(e){} }
+            return {
+                wajib: { subuh: false, zuhur: false, asar: false, magrib: false, isya: false },
+                sunnah: { tahajud: false, taubat: false, hajat: false, duha: false, witir: false, dzikir: false, shalawat: false, quran: false, sedekah: false },
+                jurnal: { syukur: '', target: '', evaluasi: '', doa: '' }
+            };
+        }
+
+        async function saveDayData(date, habitData) {
+            localStorage.setItem(`muslim_habit_2027_${date}`, JSON.stringify(habitData));
+            if (currentUser && supabaseClient) {
+                await supabaseClient.from('worship_logs').upsert({
+                    user_id: currentUser.id, log_date: date, wajib: habitData.wajib, sunnah: habitData.sunnah,
+                    syukur: habitData.jurnal.syukur, target: habitData.jurnal.target, evaluasi: habitData.jurnal.evaluasi, doa: habitData.jurnal.doa, updated_at: new Date()
+                }, { onConflict: 'user_id,log_date' });
+            }
+        }
+
+        async function loadQuranDataStorage() {
+            if (currentUser && supabaseClient) {
+                const { data } = await supabaseClient.from('quran_progress').select('*').eq('user_id', currentUser.id).single();
+                if (data) return { totalPages: data.total_pages || 0, lastSurah: data.last_surah || '-', lastAyat: data.last_ayat || 0 };
+            }
+            const raw = localStorage.getItem(`muslim_habit_2027_quran`);
+            if (raw) { try { return JSON.parse(raw); } catch(e){} }
+            return { totalPages: 0, lastSurah: '-', lastAyat: 0 };
+        }
+
+        async function saveQuranDataStorage(qData) {
+            localStorage.setItem(`muslim_habit_2027_quran`, JSON.stringify(qData));
+            if (currentUser && supabaseClient) {
+                await supabaseClient.from('quran_progress').upsert({
+                    user_id: currentUser.id, total_pages: qData.totalPages, last_surah: qData.lastSurah, last_ayat: qData.lastAyat, updated_at: new Date()
+                }, { onConflict: 'user_id' });
+            }
+        }
+
+        function setRandomMotivation() {
+            const idx = Math.floor(Math.random() * motivasiList.length);
+            document.getElementById('daily-motivation').innerText = motivasiList[idx];
+        }
+
+        function updateGreeting() {
+            const hour = new Date().getHours();
+            let greet = `Assalamu'alaikum, ${userProfileName}`;
+            if (hour >= 3 && hour < 11) greet = `Selamat Pagi, ${userProfileName}`;
+            else if (hour >= 11 && hour < 15) greet = `Selamat Siang, ${userProfileName}`;
+            else if (hour >= 15 && hour < 18) greet = `Selamat Sore, ${userProfileName}`;
+            else greet = `Selamat Malam, ${userProfileName}`;
+            document.getElementById('greeting-text').innerText = greet;
+        }
+
+        function changeDate(dateStr) {
+            if (!dateStr) return;
+            selectedDate = dateStr;
+            updateDateDisplay();
+            renderAll();
+        }
+
+        function resetToToday() {
+            selectedDate = new Date().toISOString().split('T')[0];
+            document.getElementById('global-date-picker').value = selectedDate;
+            updateDateDisplay();
+            renderAll();
+        }
+
+        function updateDateDisplay() {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const d = new Date(selectedDate + 'T00:00:00');
+            document.getElementById('header-date-string').innerText = d.toLocaleDateString('id-ID', options);
+            updateGreeting();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-brandLavender');
+                btn.classList.add('text-slate-400');
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).classList.remove('text-slate-400');
+            document.getElementById(`nav-${tabId}`).classList.add('text-brandLavender');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (tabId === 'rekap') updateChartData();
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            t.classList.remove('translate-y-[-200%]');
+            setTimeout(() => t.classList.add('translate-y-[-200%]'), 2500);
+        }
+
+        async function renderAll() {
+            const data = await loadDayData(selectedDate);
+            renderDashboard(data);
+            renderIbadahView(data);
+            renderJournalView(data);
+            renderDoaView('');
+            await renderQuranView();
+            updateStatsSummary(data);
+        }
+
+        function renderDashboard(data) {
+            let wGrid = document.getElementById('dash-wajib-grid');
+            wGrid.innerHTML = '';
+            let wCount = 0;
+            wajibList.forEach(item => {
+                const checked = data.wajib[item.id] || false;
+                if (checked) wCount++;
+                wGrid.innerHTML += `
+                    <div onclick="toggleWajib('${item.id}')" class="cursor-pointer p-2.5 rounded-2xl border text-center transition ${checked ? 'bg-brandLavender/20 border-brandLavender text-white shadow' : 'bg-brandBg border-brandBorder text-slate-300'}">
+                        <i class="fa-solid ${item.icon} text-sm mb-1 ${checked ? 'text-brandLavender' : 'text-slate-400'}"></i>
+                        <div class="text-[10px] font-semibold truncate">${item.name}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('dash-wajib-count').innerText = `${wCount} / 5`;
+
+            let sGrid = document.getElementById('dash-sunnah-grid');
+            sGrid.innerHTML = '';
+            let sCount = 0;
+            sunnahList.forEach(item => {
+                const checked = data.sunnah[item.id] || false;
+                if (checked) sCount++;
+                sGrid.innerHTML += `
+                    <div onclick="toggleSunnah('${item.id}')" class="cursor-pointer p-3 rounded-2xl border flex items-center justify-between transition ${checked ? 'bg-brandLavender/20 border-brandLavender text-white' : 'bg-brandBg border-brandBorder text-slate-300'}">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid ${item.icon} text-xs ${checked ? 'text-brandLavender' : 'text-slate-400'}"></i>
+                            <span class="text-xs font-medium">${item.name}</span>
+                        </div>
+                        <div class="w-4 h-4 rounded border flex items-center justify-center ${checked ? 'bg-brandLavender border-brandLavender text-white text-[9px]' : 'border-brandBorder'}">
+                            ${checked ? '<i class="fa-solid fa-check"></i>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('dash-sunnah-count').innerText = `${sCount} / 9`;
+
+            document.getElementById('dash-syukur-input').value = data.jurnal.syukur || '';
+
+            const totalComp = wCount + sCount;
+            const pct = Math.round((totalComp / 14) * 100);
+            document.getElementById('dash-progress-pct').innerText = `${pct}%`;
+
+            calculateStreak();
+        }
+
+        async function toggleWajib(id) {
+            let data = await loadDayData(selectedDate);
+            data.wajib[id] = !data.wajib[id];
+            await saveDayData(selectedDate, data);
+            renderAll();
+            showToast('Progres salat wajib diperbarui');
+        }
+
+        async function toggleSunnah(id) {
+            let data = await loadDayData(selectedDate);
+            data.sunnah[id] = !data.sunnah[id];
+            await saveDayData(selectedDate, data);
+            renderAll();
+            showToast('Progres amalan diperbarui');
+        }
+
+        async function saveDashSyukur() {
+            let val = document.getElementById('dash-syukur-input').value;
+            let data = await loadDayData(selectedDate);
+            data.jurnal.syukur = val;
+            await saveDayData(selectedDate, data);
+            showToast('Catatan syukur disimpan');
+        }
+
+        function renderIbadahView(data) {
+            let wList = document.getElementById('full-wajib-list');
+            wList.innerHTML = '';
+            wajibList.forEach(item => {
+                const checked = data.wajib[item.id] || false;
+                wList.innerHTML += `
+                    <div onclick="toggleWajib('${item.id}')" class="cursor-pointer p-3.5 rounded-2xl border flex items-center justify-between transition ${checked ? 'bg-brandLavender/20 border-brandLavender text-white' : 'bg-brandBg border-brandBorder text-slate-300'}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-brandBg flex items-center justify-center text-brandLavender"><i class="fa-solid ${item.icon}"></i></div>
+                            <div><div class="font-bold text-xs">Salat ${item.name}</div><div class="text-[10px] text-slate-400">Salat wajib 5 waktu</div></div>
+                        </div>
+                        <div class="w-5 h-5 rounded-md border flex items-center justify-center ${checked ? 'bg-brandLavender border-brandLavender text-white text-xs' : 'border-brandBorder'}">${checked ? '<i class="fa-solid fa-check"></i>' : ''}</div>
+                    </div>
+                `;
+            });
+
+            let sList = document.getElementById('full-sunnah-list');
+            sList.innerHTML = '';
+            sunnahList.forEach(item => {
+                const checked = data.sunnah[item.id] || false;
+                sList.innerHTML += `
+                    <div onclick="toggleSunnah('${item.id}')" class="cursor-pointer p-3.5 rounded-2xl border flex items-center justify-between transition ${checked ? 'bg-brandLavender/20 border-brandLavender text-white' : 'bg-brandBg border-brandBorder text-slate-300'}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-brandBg flex items-center justify-center text-brandLavender"><i class="fa-solid ${item.icon}"></i></div>
+                            <div><div class="font-bold text-xs">${item.name}</div><div class="text-[10px] text-slate-400">${item.desc}</div></div>
+                        </div>
+                        <div class="w-5 h-5 rounded-md border flex items-center justify-center ${checked ? 'bg-brandLavender border-brandLavender text-white text-xs' : 'border-brandBorder'}">${checked ? '<i class="fa-solid fa-check"></i>' : ''}</div>
+                    </div>
+                `;
+            });
+        }
+
+        async function toggleAllIbadah(status) {
+            let data = await loadDayData(selectedDate);
+            wajibList.forEach(i => data.wajib[i.id] = status);
+            sunnahList.forEach(i => data.sunnah[i.id] = status);
+            await saveDayData(selectedDate, data);
+            renderAll();
+            showToast('Semua amalan dicentang');
+        }
+
+        async function calculateStreak() {
+            let streak = 0;
+            let d = new Date();
+            for (let i = 0; i < 30; i++) {
+                const dateStr = d.toISOString().split('T')[0];
+                const dayData = await loadDayData(dateStr);
+                let comp = 0;
+                Object.values(dayData.wajib).forEach(v => { if(v) comp++; });
+                Object.values(dayData.sunnah).forEach(v => { if(v) comp++; });
+                if (comp >= 5) streak++;
+                else if (i > 0) break;
+                d.setDate(d.getDate() - 1);
+            }
+            document.getElementById('stat-streak').innerText = `${streak} Hari`;
+        }
+
+        function updateStatsSummary(data) {
+            let comp = 0;
+            Object.values(data.wajib).forEach(v => { if(v) comp++; });
+            Object.values(data.sunnah).forEach(v => { if(v) comp++; });
+            document.getElementById('stat-completed').innerText = `${comp}/14`;
+            const pct = Math.round((comp / 14) * 100);
+            document.getElementById('stat-consistency').innerText = `${pct}%`;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            weeklyChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{ label: 'Progres (%)', data: [], borderColor: '#8B6CF6', backgroundColor: 'rgba(139, 108, 246, 0.1)', fill: true, tension: 0.3, borderWidth: 3 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100, grid: { color: '#3d3278' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+            updateChartData();
+        }
+
+        async function updateChartData() {
+            if (!weeklyChartInstance) return;
+            let labels = [], dataPts = [];
+            for (let i = 6; i >= 0; i--) {
+                let d = new Date();
+                d.setDate(d.getDate() - i);
+                let dateStr = d.toISOString().split('T')[0];
+                let dayData = await loadDayData(dateStr);
+                let comp = 0;
+                Object.values(dayData.wajib).forEach(v => { if(v) comp++; });
+                Object.values(dayData.sunnah).forEach(v => { if(v) comp++; });
+                labels.push(d.toLocaleDateString('id-ID', { weekday: 'short' }));
+                dataPts.push(Math.round((comp / 14) * 100));
+            }
+            weeklyChartInstance.data.labels = labels;
+            weeklyChartInstance.data.datasets[0].data = dataPts;
+            weeklyChartInstance.update();
+        }
+
+        function renderJournalView(data) {
+            document.getElementById('jurnal-syukur').value = data.jurnal.syukur || '';
+            document.getElementById('jurnal-target').value = data.jurnal.target || '';
+            document.getElementById('jurnal-evaluasi').value = data.jurnal.evaluasi || '';
+            document.getElementById('jurnal-doa').value = data.jurnal.doa || '';
+        }
+
+        async function saveJournalField(field) {
+            let val = document.getElementById(`jurnal-${field}`).value;
+            let data = await loadDayData(selectedDate);
+            data.jurnal[field] = val;
+            await saveDayData(selectedDate, data);
+        }
+
+        function renderDoaView(query) {
+            let container = document.getElementById('doa-container');
+            container.innerHTML = '';
+            const filtered = listDoa.filter(d => d.title.toLowerCase().includes(query.toLowerCase()) || d.meaning.toLowerCase().includes(query.toLowerCase()));
+            if (filtered.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Doa tidak ditemukan.</p>`;
+                return;
+            }
+            filtered.forEach(doa => {
+                container.innerHTML += `
+                    <div class="bg-brandCard p-5 rounded-3xl border border-brandBorder shadow-lg space-y-3">
+                        <h4 class="font-bold text-xs text-brandLavender">${doa.title}</h4>
+                        <p class="text-lg font-arabic text-right text-slate-100 font-semibold leading-loose">${doa.arabic}</p>
+                        <p class="text-xs text-brandLavender italic">${doa.latin}</p>
+                        <p class="text-xs text-slate-300"><strong>Artinya:</strong> "${doa.meaning}"</p>
+                    </div>
+                `;
+            });
+        }
+
+        function filterDoa(val) { renderDoaView(val); }
+
+        async function renderQuranView() {
+            const q = await loadQuranDataStorage();
+            document.getElementById('quran-surah').value = q.lastSurah !== '-' ? q.lastSurah : '';
+            document.getElementById('quran-ayat').value = q.lastAyat !== 0 ? q.lastAyat : '';
+            document.getElementById('quran-pages').value = q.totalPages !== 0 ? q.totalPages : '';
+
+            document.getElementById('quran-total-halaman').innerText = q.totalPages;
+            const pct = Math.min(Math.round((q.totalPages / 604) * 100), 100);
+            document.getElementById('quran-pct-label').innerText = `${pct}%`;
+            document.getElementById('quran-posisi').innerText = q.lastSurah !== '-' ? `${q.lastSurah} : ${q.lastAyat}` : '-';
+            document.getElementById('quran-progress-bar').style.width = `${pct}%`;
+        }
+
+        async function saveQuranData() {
+            const surah = document.getElementById('quran-surah').value || '-';
+            const ayat = parseInt(document.getElementById('quran-ayat').value) || 0;
+            const pages = parseInt(document.getElementById('quran-pages').value) || 0;
+            await saveQuranDataStorage({ totalPages: pages, lastSurah: surah, lastAyat: ayat });
+            await renderQuranView();
+            showToast('Progres Qur\'an disimpan');
+        }
+    </script>
 </body>
 </html>
